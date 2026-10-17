@@ -1,0 +1,51 @@
+name: Gerar icones do Portal PWA
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/gerar-icones-pwa.yml'
+permissions:
+  contents: write
+jobs:
+  icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Criar icones PNG 192 e 512
+        run: |
+          python3 - <<'PY'
+          import os,struct,zlib,math
+          os.makedirs('assets',exist_ok=True)
+          def png(n):
+              pix=bytearray()
+              for y in range(n):
+                  pix.append(0)
+                  for x in range(n):
+                      u=x/n;v=y/n
+                      r,g,b=(8,27,45)
+                      if .06<u<.94 and .06<v<.94:
+                          r,g,b=(12,39,61)
+                      if .085<u<.915 and (.08<v<.093 or .907<v<.92):
+                          r,g,b=(223,187,116)
+                      if .085<v<.915 and (.08<u<.093 or .907<u<.92):
+                          r,g,b=(223,187,116)
+                      # Gold star constellation, stylized monogram P/J using strokes
+                      points=[(.25,.25),(.34,.18),(.46,.27),(.60,.19),(.74,.28),(.79,.70),(.65,.78),(.45,.72),(.27,.8)]
+                      if any((u-a)**2+(v-c)**2<.00045 for a,c in points):
+                          r,g,b=(255,221,154)
+                      # P stem, upper bowl and J stroke
+                      if (.29<u<.35 and .36<v<.69) or (.33<u<.49 and .36<v<.41) or (.33<u<.49 and .51<v<.56) or (.47<u<.53 and .40<v<.53) or (.65<u<.71 and .36<v<.64) or (.52<u<.69 and .64<v<.7) or (.52<u<.58 and .59<v<.68):
+                          r,g,b=(244,210,142)
+                      pix.extend((r,g,b,255))
+              def chunk(tag,data):
+                  return struct.pack('>I',len(data))+tag+data+struct.pack('>I',zlib.crc32(tag+data)&0xffffffff)
+              out=b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',n,n,8,6,0,0,0))+chunk(b'IDAT',zlib.compress(bytes(pix),9))+chunk(b'IEND',b'')
+              open(f'assets/icone-portal-{n}.png','wb').write(out)
+          for size in (192,512):png(size)
+          PY
+      - name: Publicar icones
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/icone-portal-192.png assets/icone-portal-512.png
+          git diff --cached --quiet || (git commit -m "Gerar icones PNG do PWA" && git push)
