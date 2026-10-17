@@ -1,0 +1,26 @@
+{
+  "id": "/-portal-de-projetos/",
+  "name": "Portal de Projetos — Professor Júnior",
+  "short_name": "Projetos Júnior",
+  "description": "Tangram Educativo, Torre de Hanói, Robótica CEJW Jaboti e projetos do Professor Júnior.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#071426",
+  "theme_color": "#071426",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "assets/icone-portal.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/capas-apps/tangram-educativo.jpg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
